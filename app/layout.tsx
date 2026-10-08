@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Outfit, Roboto } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
+import Nav from "@/components/shared/nav";
+import Footer from "@/components/shared/footer";
 
 const robotoHeading = Roboto({subsets:['latin'],variable:'--font-heading'});
 
@@ -25,8 +27,13 @@ export default function RootLayout({
       className={cn("antialiased", fontMono.variable, "font-sans", outfit.variable, robotoHeading.variable)}
     >
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+     
+          {children}
+        
+          </ThemeProvider>
       </body>
+
     </html>
   )
 }

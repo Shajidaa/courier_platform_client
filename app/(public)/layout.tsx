@@ -1,5 +1,39 @@
-import { AuthLayout } from "@/components/auth/auth-layout";
+import { Geist, Geist_Mono, Outfit, Roboto } from "next/font/google"
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
-    return <AuthLayout>{children}</AuthLayout>;
+
+import { ThemeProvider } from "@/components/theme-provider"
+import { cn } from "@/lib/utils";
+import Nav from "@/components/shared/nav";
+
+
+const robotoHeading = Roboto({subsets:['latin'],variable:'--font-heading'});
+
+const outfit = Outfit({subsets:['latin'],variable:'--font-sans'})
+
+const fontMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+})
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
+  return (
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn("antialiased", fontMono.variable, "font-sans", outfit.variable, robotoHeading.variable)}
+    >
+      <body>
+        <ThemeProvider>
+     <Nav/>
+          {children}
+        
+          </ThemeProvider>
+      </body>
+
+    </html>
+  )
 }

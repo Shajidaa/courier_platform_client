@@ -64,7 +64,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
 
             {/* Right panel — form */}
             <div className="flex flex-1 items-center justify-center px-6 py-12">
-                <div className="w-full max-w-[420px]">{children}</div>
+                <div className="w-full max-w-150">{children}</div>
             </div>
         </div>
     );
