@@ -29,10 +29,14 @@ export async function apiClient<T>(
         credentials,
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => null);
 
     if (!res.ok) {
-        throw new Error(data?.message ?? "Something went wrong");
+        const errorDetail =
+            (Array.isArray(data?.errorSources) && data.errorSources.length > 0)
+                ? data.errorSources.map((e: { message?: string }) => e.message).filter(Boolean).join(". ")
+                : data?.message ?? "Something went wrong";
+        throw new Error(errorDetail);
     }
 
     return data as T;

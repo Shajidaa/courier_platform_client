@@ -110,16 +110,23 @@ export function BookShipmentForm() {
     e.preventDefault();
     setError(null);
 
+    const cleanedPhone = recipientPhone.replace(/[\s-]/g, "");
+    const phoneRegex = /^(\+?880|0)?1[3-9]\d{8}$/;
+
     if (!recipientName.trim()) {
-      setError("Recipient name is required.");
+      setError("Recipient name is required (at least 2 characters).");
       return;
     }
-    if (!recipientPhone.trim()) {
+    if (!cleanedPhone) {
       setError("Recipient phone number is required.");
       return;
     }
-    if (!recipientAddress.trim()) {
-      setError("Recipient delivery address is required.");
+    if (!phoneRegex.test(cleanedPhone)) {
+      setError("Please enter a valid Bangladeshi phone number (e.g. 01712345678 or +8801712345678).");
+      return;
+    }
+    if (!recipientAddress.trim() || recipientAddress.trim().length < 5) {
+      setError("Recipient delivery address is required (at least 5 characters).");
       return;
     }
     if (weight <= 0) {
@@ -132,7 +139,7 @@ export function BookShipmentForm() {
     try {
       const res = await shipmentApi.create({
         recipientName: recipientName.trim(),
-        recipientPhone: recipientPhone.trim(),
+        recipientPhone: cleanedPhone,
         recipientAddress: recipientAddress.trim(),
         weight: Number(weight),
         category,
