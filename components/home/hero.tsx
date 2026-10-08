@@ -10,10 +10,29 @@ import {
   Building2,
   Clock,
   Sparkles,
+  LayoutDashboard,
+  Search,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import { useAuth } from "@/hooks/use-auth";
+import { ROLE_HOME, type TRole } from "@/types/roles";
+
+const ROLE_LABELS: Record<string, string> = {
+  SENDER: "Sender",
+  RIDER: "Rider",
+  HUB_MANAGER: "Hub Manager",
+  OPS_MANAGER: "Ops Manager",
+  SUPPORT_AGENT: "Support Agent",
+  ADMIN: "Admin",
+  SUPER_ADMIN: "Super Admin",
+};
 
 export default function HeroSection() {
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const role = (user?.role ?? "SENDER") as TRole;
+  const dashboardUrl = ROLE_HOME[role] ?? "/dashboard/sender";
+  const roleLabel = ROLE_LABELS[role] ?? role;
+
   return (
     <section className="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-24">
       {/* Ambient background glow */}
@@ -21,10 +40,17 @@ export default function HeroSection() {
 
       <div className="mx-auto max-w-5xl px-6 text-center">
         {/* Status Chip */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary mb-6 animate-in fade-in slide-in-from-top-4 duration-500">
-          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Next-Generation Intelligent Courier Infrastructure</span>
-        </div>
+        {!isLoading && isAuthenticated && user ? (
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary mb-6 animate-in fade-in slide-in-from-top-4 duration-500">
+            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Welcome back, {user.name} ({roleLabel})</span>
+          </div>
+        ) : (
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-1.5 text-xs font-semibold text-primary mb-6 animate-in fade-in slide-in-from-top-4 duration-500">
+            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Next-Generation Intelligent Courier Infrastructure</span>
+          </div>
+        )}
 
         {/* Hero Title */}
         <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground max-w-4xl mx-auto leading-tight">
@@ -42,17 +68,55 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-          <Button size="lg" asChild className="h-12 px-7 rounded-xl font-semibold shadow-lg shadow-primary/20 gap-2 text-base">
-            <Link href="/register">
-              <span>Get Started Free</span>
-              <ArrowRight className="size-4" />
-            </Link>
-          </Button>
-          <Button variant="outline" size="lg" asChild className="h-12 px-7 rounded-xl font-semibold border-border bg-card/60 backdrop-blur text-base">
-            <Link href="/login">
-              Sign In to Portal
-            </Link>
-          </Button>
+          {!isLoading && isAuthenticated && user ? (
+            <>
+              <Button
+                size="lg"
+                asChild
+                className="h-12 px-7 rounded-xl font-semibold shadow-lg shadow-primary/20 gap-2 text-base"
+              >
+                <Link href={dashboardUrl}>
+                  <LayoutDashboard className="size-4.5" />
+                  <span>Go to Your Dashboard</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                asChild
+                className="h-12 px-7 rounded-xl font-semibold border-border bg-card/60 backdrop-blur text-base gap-2"
+              >
+                <Link href="/track">
+                  <Search className="size-4.5" />
+                  <span>Track Parcels</span>
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                size="lg"
+                asChild
+                className="h-12 px-7 rounded-xl font-semibold shadow-lg shadow-primary/20 gap-2 text-base"
+              >
+                <Link href="/register">
+                  <span>Get Started Free</span>
+                  <ArrowRight className="size-4" />
+                </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                asChild
+                className="h-12 px-7 rounded-xl font-semibold border-border bg-card/60 backdrop-blur text-base"
+              >
+                <Link href="/login">
+                  Sign In to Portal
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Quick Highlights Bar */}

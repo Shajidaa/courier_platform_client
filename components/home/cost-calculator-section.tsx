@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/use-auth";
+import { ROLE_HOME, type TRole } from "@/types/roles";
 import type { TDeliveryType, TShipmentCategory } from "@/types/shipment.types";
 
 const DELIVERY_TIERS: {
@@ -53,10 +55,15 @@ const DELIVERY_TIERS: {
 ];
 
 export function CostCalculatorSection() {
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [weight, setWeight] = useState<number>(2);
   const [selectedTier, setSelectedTier] = useState<TDeliveryType>("STANDARD");
   const [isCod, setIsCod] = useState(false);
   const [codAmount, setCodAmount] = useState<number>(1000);
+
+  const bookUrl = !isLoading && isAuthenticated && user
+    ? (user.role === "SENDER" ? "/dashboard/sender/book" : (ROLE_HOME[user.role as TRole] ?? "/dashboard"))
+    : "/login";
 
   const calculateCost = (w: number, mult: number) => {
     const BASE_RATE = 60; // BDT per KG
@@ -196,7 +203,7 @@ export function CostCalculatorSection() {
               </div>
 
               <Button asChild size="lg" className="w-full font-semibold shadow-md gap-2">
-                <Link href="/login">
+                <Link href={bookUrl}>
                   <span>Book This Delivery Now</span>
                   <ArrowRight className="size-4" />
                 </Link>

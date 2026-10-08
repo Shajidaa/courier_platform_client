@@ -1,6 +1,6 @@
 import { Clock, MapPin, Package, Truck } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-
+import Link from "next/link";
 const stats = [
     { icon: Truck, label: "Active deliveries", value: "12,400+" },
     { icon: MapPin, label: "Cities covered", value: "80+" },
@@ -26,12 +26,12 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
                 </div>
 
                 {/* Logo */}
-                <div className="relative flex items-center gap-3">
+                <Link href="/" className="relative flex items-center gap-3">
                     <div className="flex size-9 items-center justify-center rounded-xl bg-white/20">
                         <Package className="size-5 text-white" />
                     </div>
                     <span className="font-heading text-xl font-semibold text-white">CourierPro</span>
-                </div>
+                </Link>
 
                 {/* Copy */}
                 <div className="relative space-y-6">
