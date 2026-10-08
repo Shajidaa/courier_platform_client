@@ -13,7 +13,7 @@ import {
 import { useAuth } from "@/hooks/use-auth"
 import { NAV_ITEMS } from "@/config/nav.config"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { Button } from "@/components/ui/button"
+
 import { cn } from "@/lib/utils"
 import type { TRole } from "@/types/roles"
 
@@ -46,12 +46,12 @@ function SidebarContent({ onNavClick }: { onNavClick?: () => void }) {
     return (
         <div className="flex h-full flex-col">
             {/* Logo */}
-            <div className="flex h-14 items-center gap-2.5 border-b border-border px-4">
+            <Link href="/" className="flex h-14 items-center gap-2.5 border-b border-border px-4">
                 <div className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                     <Package className="size-4" />
                 </div>
                 <span className="font-heading font-semibold text-foreground">CourierPro</span>
-            </div>
+            </Link>
 
             {/* User info */}
             <div className="border-b border-border px-4 py-3">

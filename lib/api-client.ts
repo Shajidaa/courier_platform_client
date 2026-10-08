@@ -1,3 +1,5 @@
+import { tokenStorage } from "@/lib/token";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api/v1";
 
 type RequestOptions = {
@@ -13,12 +15,16 @@ export async function apiClient<T>(
 ): Promise<T> {
     const { method = "GET", body, headers = {}, credentials = "include" } = options;
 
+    const token = tokenStorage.get();
+    const finalHeaders: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers,
+    };
+
     const res = await fetch(`${BASE_URL}${endpoint}`, {
         method,
-        headers: {
-            "Content-Type": "application/json",
-            ...headers,
-        },
+        headers: finalHeaders,
         body: body ? JSON.stringify(body) : undefined,
         credentials,
     });
