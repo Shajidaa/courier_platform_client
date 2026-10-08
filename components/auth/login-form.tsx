@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
+
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,28 +77,35 @@ export function LoginForm() {
                     leftIcon={<Mail />}
                 />
 
-                <Input
-                    label="Password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    error={errors.password}
-                    disabled={isPending}
-                    leftIcon={<Lock />}
-                    rightElement={
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword((v) => !v)}
-                            className="text-muted-foreground transition-colors hover:text-foreground"
-                            aria-label={showPassword ? "Hide password" : "Show password"}
-                            tabIndex={-1}
-                        >
-                            {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                        </button>
-                    }
-                />
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex items-center justify-between">
+                        <label className="text-sm font-medium text-foreground">Password</label>
+                        <Link href="/forgot-password" className="text-xs text-primary underline-offset-4 hover:underline">
+                            Forgot password?
+                        </Link>
+                    </div>
+                    <Input
+                        type={showPassword ? "text" : "password"}
+                        autoComplete="current-password"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        error={errors.password}
+                        disabled={isPending}
+                        leftIcon={<Lock />}
+                        rightElement={
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword((v) => !v)}
+                                className="text-muted-foreground transition-colors hover:text-foreground"
+                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                tabIndex={-1}
+                            >
+                                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                            </button>
+                        }
+                    />
+                </div>
 
                 {/* Root error */}
                 {errors.root && (

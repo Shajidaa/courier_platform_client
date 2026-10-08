@@ -7,7 +7,7 @@ export interface IRegisterPayload {
   name: string
   email: string
   password: string
-  gender: "MALE" | "FEMALE"
+  gender: "MALE" | "FEMALE" | "OTHER"
   role?: "RIDER" | "SENDER"
 }
 
