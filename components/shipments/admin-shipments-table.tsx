@@ -22,6 +22,7 @@ import { ShipmentDetailModal } from "./shipment-detail-modal";
 import { StatusUpdateModal } from "./status-update-modal";
 import { AssignRiderModal } from "./assign-rider-modal";
 import { useShipments } from "@/hooks/use-shipments";
+import { useAuth } from "@/hooks/use-auth";
 import type { IShipment, TShipmentStatus } from "@/types/shipment.types";
 
 const ALL_STATUSES: TShipmentStatus[] = [
@@ -38,6 +39,7 @@ const ALL_STATUSES: TShipmentStatus[] = [
 ];
 
 export function AdminShipmentsTable() {
+  const { user } = useAuth();
   const {
     shipments,
     meta,
@@ -172,10 +174,14 @@ export function AdminShipmentsTable() {
                     "CANCELLED",
                     "RETURNED",
                   ].includes(shipment.status);
-                  const canAssignRider = [
-                    "ACCEPTED",
-                    "PICKED_UP",
-                  ].includes(shipment.status);
+                  const isStaff =
+                    user?.role === "ADMIN" ||
+                    user?.role === "SUPER_ADMIN" ||
+                    user?.role === "OPS_MANAGER" ||
+                    user?.role === "HUB_MANAGER";
+                  const canAssignRider =
+                    isStaff &&
+                    ["ACCEPTED", "PICKED_UP"].includes(shipment.status);
 
                   return (
                     <tr

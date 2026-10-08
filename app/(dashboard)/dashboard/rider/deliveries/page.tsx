@@ -10,7 +10,18 @@ export const metadata: Metadata = {
 export default function RiderDeliveriesPage() {
   return (
     <RoleGuard allowedRoles={["RIDER", "ADMIN", "SUPER_ADMIN"]}>
-      <AdminShipmentsTable />
+      <div className="space-y-6">
+        <div>
+          <h2 className="font-heading text-2xl font-bold text-foreground">
+            My Delivery Runs
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Track and update parcels assigned to your courier runs.
+          </p>
+        </div>
+
+        <AdminShipmentsTable />
+      </div>
     </RoleGuard>
   );
 }
