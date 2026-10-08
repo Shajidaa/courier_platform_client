@@ -1,8 +1,9 @@
 "use client";
 
-import { Package, Loader2 } from "lucide-react";
+import { Package } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function DashboardNav() {
     const { user, logout } = useAuth();
@@ -15,10 +16,11 @@ export function DashboardNav() {
                 </div>
                 <span className="font-heading font-semibold text-foreground">CourierPro</span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
                 <span className="text-sm text-muted-foreground">
                     {user?.name ?? user?.email}
                 </span>
+                <ThemeToggle />
                 <Button variant="outline" size="sm" onClick={logout}>
                     Sign out
                 </Button>

@@ -1,39 +1,33 @@
-import { Geist, Geist_Mono, Outfit, Roboto } from "next/font/google"
-
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
+import type { Metadata } from "next";
+import { Geist_Mono, Outfit, Roboto } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
-import Nav from "@/components/shared/nav";
-import Footer from "@/components/shared/footer";
 
-const robotoHeading = Roboto({subsets:['latin'],variable:'--font-heading'});
+const robotoHeading = Roboto({ subsets: ["latin"], variable: "--font-heading" });
+const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
+const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
-const outfit = Outfit({subsets:['latin'],variable:'--font-sans'})
+export const metadata: Metadata = {
+  title: "CourierPro",
+  description: "Courier logistics platform",
+};
 
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", outfit.variable, robotoHeading.variable)}
+      className={cn(
+        "antialiased",
+        outfit.variable,
+        robotoHeading.variable,
+        fontMono.variable,
+      )}
     >
       <body>
-        <ThemeProvider>
-     
-          {children}
-        
-          </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
-
     </html>
-  )
+  );
 }
