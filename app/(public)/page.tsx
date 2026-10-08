@@ -1,110 +1,42 @@
-import Link from "next/link";
-import {
-  Truck,
-  MapPin,
-  Shield,
-  Zap,
-  Building2,
-  Wallet,
-  CheckCircle2,
-  ArrowRight,
-  Package,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 import HeroSection from "@/components/home/hero";
 import { TrackShipmentSection } from "@/components/home/track-shipment-section";
-import { CostCalculatorSection } from "@/components/home/cost-calculator-section";
-import { CoverageSection } from "@/components/home/coverage-section";
-import { CtaSection } from "@/components/home/cta-section";
 
-const features = [
-  {
-    icon: Truck,
-    title: "Multi-Hub Routing & Transfers",
-    description:
-      "Automated inter-hub dispatching and batch transfers ensure parcels move seamlessly across districts.",
-  },
-  {
-    icon: Zap,
-    title: "Real-Time Tracking & Logs",
-    description:
-      "Full transparent timeline of every scan, hub arrival, and courier handover with timestamped logs.",
-  },
-  {
-    icon: Wallet,
-    title: "bKash & COD Checkout",
-    description:
-      "Instant online bKash payments or flexible Cash on Delivery collection with automated settlement.",
-  },
-  {
-    icon: Building2,
-    title: "Fleet & Driver Allocation",
-    description:
-      "Dedicated management for transport vehicles, capacity utilization, and courier rider assignments.",
-  },
-  {
-    icon: Shield,
-    title: "Role-Based Security",
-    description:
-      "Tailored dashboard workflows for Senders, Riders, Hub Managers, Ops Managers, and Administrators.",
-  },
-  {
-    icon: Package,
-    title: "Rate Calculator & Coverage",
-    description:
-      "Predictable weight-based rate calculations with nationwide postal code service coverage.",
-  },
-];
+import { CostCalculatorSection } from "@/components/home/cost-calculator-section";
+import { PersonaExperienceSection } from "@/components/home/persona-experience-section";
+import { CoverageSection } from "@/components/home/coverage-section";
+
+import { CtaSection } from "@/components/home/cta-section";
+import { HowItWorksSection } from "@/components/home/how-it-works-section";
+import { FeaturesBentoSection } from "@/components/home/features-bento-section";
+import { TestimonialsSection } from "@/components/home/testimonials-section";
 
 export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      {/* Hero Section */}
+    <div className="flex min-h-screen flex-col bg-background selection:bg-primary/20 selection:text-primary">
+      {/* 1. Hero Section with Split Value Prop & 3D Logistics Visual Stage */}
       <HeroSection />
 
-      {/* Live Parcel Tracking Tool */}
+      {/* 2. Live Interactive Parcel Tracking Tool */}
       <TrackShipmentSection />
 
-      {/* Cost & Delivery Calculator */}
+      {/* 3. 4-Step Interactive Logistics Pipeline */}
+      <HowItWorksSection />
+
+      {/* 4. Enterprise Feature Matrix & Bento Visual Showcase */}
+      <FeaturesBentoSection />
+
+      {/* 5. Dynamic Weight & Rate Cost Calculator */}
       <CostCalculatorSection />
 
-      {/* Core Features */}
-      <section className="py-20 border-t border-border bg-background">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="text-center max-w-xl mx-auto mb-12">
-            <h2 className="font-heading text-2xl sm:text-3xl font-bold text-foreground">
-              Engineered for Enterprise Courier Operations
-            </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Everything required to operate a reliable parcel delivery network with complete operational control.
-            </p>
-          </div>
+      {/* 6. Persona Experience Tabs (Senders, Riders, Hubs, Enterprise) */}
+      <PersonaExperienceSection />
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map(({ icon: Icon, title, description }) => (
-              <div
-                key={title}
-                className="group flex flex-col gap-3 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/40 hover:shadow-md"
-              >
-                <div className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-primary-foreground">
-                  <Icon className="size-5" />
-                </div>
-                <h3 className="font-heading font-semibold text-foreground text-base mt-1">
-                  {title}
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                  {description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Coverage & Service Area Search */}
+      {/* 7. Nationwide Hub Coverage & District Directory */}
       <CoverageSection />
 
-      {/* Final Call to Action */}
+      {/* 8. Merchant & Fleet Testimonials */}
+      <TestimonialsSection />
+      {/* 9. Final Radiant Call-to-Action */}
       <CtaSection />
     </div>
   );
