@@ -4,17 +4,17 @@ import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { authApi } from "@/api/auth.api"
 import { parseJwt, tokenStorage } from "@/lib/token"
-import type {
-  IJwtPayload,
-  ILoginPayload,
-  IRegisterPayload,
-  IVerifyEmailPayload,
-} from "@/types/auth.types"
+import type { IJwtPayload, ILoginPayload, IRegisterPayload, IVerifyEmailPayload } from "@/types/auth.types"
+import { ROLE_HOME, type TRole } from "@/types/roles"
 
 interface AuthState {
   user: IJwtPayload | null
   isAuthenticated: boolean
   isLoading: boolean
+}
+
+function getRoleHome(role: string): string {
+  return ROLE_HOME[role as TRole] ?? "/dashboard/sender"
 }
 
 export function useAuth() {
@@ -42,9 +42,9 @@ export function useAuth() {
       tokenStorage.set(accessToken)
       const user = parseJwt(accessToken)
       setState({ user, isAuthenticated: true, isLoading: false })
-      router.push("/dashboard")
+      router.push(getRoleHome(user?.role ?? ""))
     },
-    [router]
+    [router],
   )
 
   const register = useCallback(
@@ -52,7 +52,7 @@ export function useAuth() {
       await authApi.register(payload)
       router.push(`/verify-email?email=${encodeURIComponent(payload.email)}`)
     },
-    [router]
+    [router],
   )
 
   const verifyEmail = useCallback(
@@ -62,9 +62,9 @@ export function useAuth() {
       tokenStorage.set(accessToken)
       const user = parseJwt(accessToken)
       setState({ user, isAuthenticated: true, isLoading: false })
-      router.push("/dashboard")
+      router.push(getRoleHome(user?.role ?? ""))
     },
-    [router]
+    [router],
   )
 
   const logout = useCallback(async () => {
