@@ -28,6 +28,7 @@ interface ShipmentDetailModalProps {
   open: boolean;
   onClose: () => void;
   onPayBkash?: (shipmentId: string) => void;
+  onAssignRider?: (shipment: IShipment) => void;
 }
 
 export function ShipmentDetailModal({
@@ -35,6 +36,7 @@ export function ShipmentDetailModal({
   open,
   onClose,
   onPayBkash,
+  onAssignRider,
 }: ShipmentDetailModalProps) {
   const [shipment, setShipment] = useState<IShipment | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -149,6 +151,19 @@ export function ShipmentDetailModal({
                     <Truck className="size-3.5" />
                     Courier: {shipment.assignedCourier.user.name}
                   </p>
+                )}
+                {onAssignRider && !["DELIVERED", "CANCELLED", "RETURNED"].includes(shipment.status) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onAssignRider(shipment);
+                    }}
+                    className="mt-1 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline"
+                  >
+                    <span>{shipment.assignedCourier ? "Change Assigned Rider" : "Assign Rider Courier"}</span>
+                    <ArrowRight className="size-3" />
+                  </button>
                 )}
               </div>
             </div>

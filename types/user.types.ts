@@ -26,6 +26,25 @@ export interface IUser {
     profile?: IProfile | null
 }
 
+export interface IRider {
+    id: string
+    userId: string
+    name: string
+    email: string
+    phone?: string
+    address?: string
+    status?: string
+    imageUrl?: string
+    hubId?: string | null
+    hubName?: string | null
+    hubCity?: string | null
+    vehicleType?: string | null
+    vehicleNumber?: string | null
+    totalDeliveries?: number
+    averageRating?: number | null
+}
+
+
 // ── Request payloads (match server validation exactly) ──────────────────────
 
 export interface IForgotPasswordPayload {

@@ -6,6 +6,7 @@ import type {
     IResetPasswordPayload,
     IUpdateProfilePayload,
     IUser,
+    IRider,
 } from "@/types/user.types"
 import { tokenStorage } from "@/lib/token"
 
@@ -18,6 +19,12 @@ export const userApi = {
     /** GET /user/me — requires auth */
     getProfile: () =>
         apiClient<IApiResponse<IUser>>("/user/me", {
+            headers: authHeaders(),
+        }),
+
+    /** GET /user/riders — requires auth (Admin/Ops/Hub Manager) */
+    getRiders: () =>
+        apiClient<IApiResponse<IRider[]>>("/user/riders", {
             headers: authHeaders(),
         }),
 

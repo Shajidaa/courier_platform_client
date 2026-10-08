@@ -317,6 +317,7 @@ export function AdminShipmentsTable() {
           setDetailModalOpen(false);
           setSelectedShipmentId(null);
         }}
+        onAssignRider={handleOpenAssignRider}
       />
 
       <StatusUpdateModal
