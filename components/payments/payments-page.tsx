@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Wallet,
   CheckCircle2,
@@ -12,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   DollarSign,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PaymentStatusBadge } from "./payment-status-badge";
@@ -19,7 +21,10 @@ import { BkashPaymentModal } from "./bkash-payment-modal";
 import { useShipments } from "@/hooks/use-shipments";
 import type { IShipment } from "@/types/shipment.types";
 
-export function PaymentsPage({ isSender = true }: { isSender?: boolean }) {
+function PaymentsPageContent({ isSender = true }: { isSender?: boolean }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
   const { shipments, isLoading, error, refetch } = useShipments({
     isSender,
     initialLimit: 50,
@@ -27,6 +32,41 @@ export function PaymentsPage({ isSender = true }: { isSender?: boolean }) {
 
   const [selectedPayShipmentId, setSelectedPayShipmentId] = useState<string | null>(null);
   const [bkashModalOpen, setBkashModalOpen] = useState(false);
+
+  // Search parameters from payment return callback
+  const paymentStatusParam = searchParams.get("paymentStatus");
+  const messageParam = searchParams.get("message");
+  const trxIDParam = searchParams.get("trxID");
+  const amountParam = searchParams.get("amount");
+
+  const [notification, setNotification] = useState<{
+    type: "success" | "failed";
+    message: string;
+    trxID?: string;
+    amount?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    if (paymentStatusParam === "success") {
+      setNotification({
+        type: "success",
+        message: messageParam || "Payment completed successfully.",
+        trxID: trxIDParam || undefined,
+        amount: amountParam || undefined,
+      });
+      refetch();
+    } else if (paymentStatusParam === "failed") {
+      setNotification({
+        type: "failed",
+        message: messageParam || "Payment was cancelled or failed. No charge was made.",
+      });
+    }
+  }, [paymentStatusParam, messageParam, trxIDParam, amountParam, refetch]);
+
+  const handleDismissNotification = () => {
+    setNotification(null);
+    router.replace("/dashboard/sender/payments");
+  };
 
   // Extract payment records from shipments
   const paymentsList = shipments.flatMap((s) =>
@@ -60,6 +100,59 @@ export function PaymentsPage({ isSender = true }: { isSender?: boolean }) {
           View transaction records, delivery charges, COD settlements, and bKash receipts.
         </p>
       </div>
+
+      {/* Payment Callback Notification Banner */}
+      {notification && (
+        <div
+          className={`flex items-start justify-between rounded-2xl border p-4 shadow-xs transition-all ${
+            notification.type === "success"
+              ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-950 dark:text-emerald-200"
+              : "border-destructive/30 bg-destructive/10 text-destructive"
+          }`}
+        >
+          <div className="flex items-start gap-3.5">
+            <div
+              className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${
+                notification.type === "success"
+                  ? "bg-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+                  : "bg-destructive/20 text-destructive"
+              }`}
+            >
+              {notification.type === "success" ? (
+                <CheckCircle2 className="size-5" />
+              ) : (
+                <AlertCircle className="size-5" />
+              )}
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-heading text-sm font-bold">
+                {notification.type === "success"
+                  ? "bKash Payment Completed Successfully"
+                  : "Payment Not Completed"}
+              </h4>
+              <p className="text-xs opacity-90 leading-relaxed">
+                {notification.message}
+                {notification.trxID && (
+                  <span className="ml-2 font-mono font-semibold">
+                    (TrxID: {notification.trxID})
+                  </span>
+                )}
+                {notification.amount && (
+                  <span className="ml-2 font-bold">• ৳{notification.amount}</span>
+                )}
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="size-8 p-0 opacity-70 hover:opacity-100"
+            onClick={handleDismissNotification}
+          >
+            <X className="size-4" />
+          </Button>
+        </div>
+      )}
 
       {/* Overview Stat Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -203,5 +296,19 @@ export function PaymentsPage({ isSender = true }: { isSender?: boolean }) {
         onSuccess={() => refetch()}
       />
     </div>
+  );
+}
+
+export function PaymentsPage({ isSender = true }: { isSender?: boolean }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="size-6 animate-spin text-primary" />
+        </div>
+      }
+    >
+      <PaymentsPageContent isSender={isSender} />
+    </Suspense>
   );
 }

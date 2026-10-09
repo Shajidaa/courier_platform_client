@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { ShipmentStatusBadge } from "./shipment-status-badge";
 import { ShipmentDetailModal } from "./shipment-detail-modal";
 import { EditShipmentModal } from "./edit-shipment-modal";
+import { BkashPaymentModal } from "@/components/payments/bkash-payment-modal";
 import { useShipments } from "@/hooks/use-shipments";
 import type { IShipment, TShipmentStatus } from "@/types/shipment.types";
 
@@ -54,6 +55,8 @@ export function SenderShipmentsTable() {
   const [editingShipment, setEditingShipment] = useState<IShipment | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [cancellingId, setCancellingId] = useState<string | null>(null);
+  const [selectedPayShipmentId, setSelectedPayShipmentId] = useState<string | null>(null);
+  const [bkashModalOpen, setBkashModalOpen] = useState(false);
 
   const handleOpenDetail = (id: string) => {
     setSelectedShipmentId(id);
@@ -106,11 +109,10 @@ export function SenderShipmentsTable() {
                 setStatusFilter(tab.value);
                 setPage(1);
               }}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                active
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${active
                   ? "bg-primary text-primary-foreground shadow-xs"
                   : "bg-muted/60 text-muted-foreground hover:bg-muted hover:text-foreground"
-              }`}
+                }`}
             >
               {tab.label}
             </button>
@@ -293,6 +295,10 @@ export function SenderShipmentsTable() {
           setDetailModalOpen(false);
           setSelectedShipmentId(null);
         }}
+        onPayBkash={(id) => {
+          setSelectedPayShipmentId(id);
+          setBkashModalOpen(true);
+        }}
       />
 
       {/* Edit Modal */}
@@ -302,6 +308,17 @@ export function SenderShipmentsTable() {
         onClose={() => {
           setEditModalOpen(false);
           setEditingShipment(null);
+        }}
+        onSuccess={() => refetch()}
+      />
+
+      {/* bKash Payment Modal */}
+      <BkashPaymentModal
+        shipmentId={selectedPayShipmentId}
+        open={bkashModalOpen}
+        onClose={() => {
+          setBkashModalOpen(false);
+          setSelectedPayShipmentId(null);
         }}
         onSuccess={() => refetch()}
       />
