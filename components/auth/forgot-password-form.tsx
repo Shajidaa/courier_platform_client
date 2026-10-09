@@ -9,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { useRouter } from "next/navigation"
 
+
+
 // ── OTP boxes ─────────────────────────────────────────────────────────────────
 function OtpInput({
     value,
@@ -21,8 +23,8 @@ function OtpInput({
     disabled: boolean
     hasError: boolean
 }) {
-    const refs = useRef<(HTMLInputElement | null)[]>([])
-    const digits = value.padEnd(6, "").split("").slice(0, 6)
+    const refs = useRef<HTMLInputElement[]>([])
+    const digits = Array.from({ length: 6 }, (_, index) => value[index] || "")
 
     const handleChange = (i: number, raw: string) => {
         const digit = raw.replace(/\D/g, "").slice(-1)
@@ -43,11 +45,13 @@ function OtpInput({
     }
 
     return (
-        <div className="flex justify-center gap-3" onPaste={handlePaste}>
+        <div className="flex justify-center gap-3 w-full" onPaste={handlePaste}>
             {digits.map((digit, i) => (
                 <input
                     key={i}
-                    ref={(el) => { refs.current[i] = el }}
+                    ref={(el) => {
+                        if (el) refs.current[i] = el
+                    }}
                     type="text"
                     inputMode="numeric"
                     maxLength={1}
@@ -69,7 +73,6 @@ function OtpInput({
         </div>
     )
 }
-
 // ── Error banner ──────────────────────────────────────────────────────────────
 function ErrorBanner({ message }: { message: string }) {
     return (
@@ -205,18 +208,18 @@ export function ForgotPasswordForm() {
                 </p>
             </div>
 
-            <form onSubmit={handleReset} noValidate className="flex flex-col gap-5">
-                {/* OTP */}
-                <div className="flex flex-col gap-2">
-                    <label className="text-sm font-medium text-foreground">Verification code</label>
-                    <OtpInput
-                        value={otp}
-                        onChange={(v) => { setOtp(v); setErrors((e) => ({ ...e, otp: "" })) }}
-                        disabled={isPending}
-                        hasError={!!errors.otp}
-                    />
-                    {errors.otp && <p role="alert" className="text-center text-xs text-destructive">{errors.otp}</p>}
-                </div>
+         <form onSubmit={handleReset} noValidate className="flex flex-col gap-5">
+    {/* OTP */}
+    <div className="flex flex-col gap-2">
+        <label className="text-sm font-medium text-foreground">Verification code</label>
+        <OtpInput
+            value={otp}
+            onChange={(v) => { setOtp(v); setErrors((e) => ({ ...e, otp: "" })) }}
+            disabled={isPending}
+            hasError={!!errors.otp}
+        />
+        {errors.otp && <p role="alert" className="text-center text-xs text-destructive">{errors.otp}</p>}
+    </div>
 
                 <Input
                     label="New password"
