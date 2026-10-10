@@ -17,7 +17,7 @@ export type TShipmentCategory =
 
 export type TDeliveryType = "STANDARD" | "EXPRESS" | "SAME_DAY" | "NEXT_DAY"
 
-export type TPaymentMethod = "CASH_ON_DELIVERY" | "BKASH"
+export type TPaymentMethod = "BKASH"
 
 export type TPaymentStatus = "PENDING" | "PAID" | "FAILED" | "REFUNDED"
 

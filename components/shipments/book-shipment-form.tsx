@@ -85,7 +85,7 @@ export function BookShipmentForm() {
   const [deliveryType, setDeliveryType] = useState<TDeliveryType>("STANDARD");
   const [codAmount, setCodAmount] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] =
-    useState<TPaymentMethod>("CASH_ON_DELIVERY");
+    useState<TPaymentMethod>("BKASH");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -354,15 +354,15 @@ export function BookShipmentForm() {
                   }
                   className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 outline-none"
                 >
-                  <option value="CASH_ON_DELIVERY" className="bg-background">
+                  {/* <option value="CASH_ON_DELIVERY" className="bg-background">
                     Cash on Delivery (COD)
-                  </option>
+                  </option> */}
                   <option value="BKASH" className="bg-background">
                     bKash Online Payment
                   </option>
-                  <option value="CARD" className="bg-background">
+                  {/* <option value="CARD" className="bg-background">
                     Credit / Debit Card
-                  </option>
+                  </option> */}
                 </select>
               </div>
             </div>

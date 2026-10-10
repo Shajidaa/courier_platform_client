@@ -8,10 +8,7 @@ import {
   Clock,
   AlertCircle,
   ExternalLink,
-  Search,
   Loader2,
-  ChevronLeft,
-  ChevronRight,
   DollarSign,
   X,
 } from "lucide-react";
@@ -19,7 +16,6 @@ import { Button } from "@/components/ui/button";
 import { PaymentStatusBadge } from "./payment-status-badge";
 import { BkashPaymentModal } from "./bkash-payment-modal";
 import { useShipments } from "@/hooks/use-shipments";
-import type { IShipment } from "@/types/shipment.types";
 
 function PaymentsPageContent({ isSender = true }: { isSender?: boolean }) {
   const searchParams = useSearchParams();
@@ -39,32 +35,28 @@ function PaymentsPageContent({ isSender = true }: { isSender?: boolean }) {
   const trxIDParam = searchParams.get("trxID");
   const amountParam = searchParams.get("amount");
 
-  const [notification, setNotification] = useState<{
-    type: "success" | "failed";
-    message: string;
-    trxID?: string;
-    amount?: string;
-  } | null>(null);
-
+  // Refetch shipments when payment succeeds (side-effect only, no setState here)
   useEffect(() => {
     if (paymentStatusParam === "success") {
-      setNotification({
-        type: "success",
-        message: messageParam || "Payment completed successfully.",
+      refetch();
+    }
+  }, [paymentStatusParam, refetch]);
+
+  // Derive notification directly from search parameters (no local state needed)
+  const notification = paymentStatusParam
+    ? {
+        type: (paymentStatusParam === "success" ? "success" : "failed") as "success" | "failed",
+        message:
+          messageParam ||
+          (paymentStatusParam === "success"
+            ? "Payment completed successfully."
+            : "Payment was cancelled or failed. No charge was made."),
         trxID: trxIDParam || undefined,
         amount: amountParam || undefined,
-      });
-      refetch();
-    } else if (paymentStatusParam === "failed") {
-      setNotification({
-        type: "failed",
-        message: messageParam || "Payment was cancelled or failed. No charge was made.",
-      });
-    }
-  }, [paymentStatusParam, messageParam, trxIDParam, amountParam, refetch]);
+      }
+    : null;
 
   const handleDismissNotification = () => {
-    setNotification(null);
     router.replace("/dashboard/sender/payments");
   };
 
@@ -138,7 +130,7 @@ function PaymentsPageContent({ isSender = true }: { isSender?: boolean }) {
                   </span>
                 )}
                 {notification.amount && (
-                  <span className="ml-2 font-bold">• ৳{notification.amount}</span>
+                  <span className="ml-2 font-bold">৳{notification.amount}</span>
                 )}
               </p>
             </div>
