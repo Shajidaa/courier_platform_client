@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ShipmentStatusBadge } from "./shipment-status-badge";
+import { PaymentStatusBadge } from "@/components/payments/payment-status-badge";
 import { ShipmentDetailModal } from "./shipment-detail-modal";
 import { EditShipmentModal } from "./edit-shipment-modal";
 import { BkashPaymentModal } from "@/components/payments/bkash-payment-modal";
@@ -207,7 +208,16 @@ export function SenderShipmentsTable() {
                         ৳{Number(shipment.deliveryCharge).toFixed(2)}
                       </td>
                       <td className="px-5 py-4">
-                        <ShipmentStatusBadge status={shipment.status} />
+                        <div className="flex flex-col gap-1 items-start">
+                          <ShipmentStatusBadge status={shipment.status} />
+                          <PaymentStatusBadge
+                            status={
+                              shipment.payments && shipment.payments.length > 0 && shipment.payments.every((p) => p.paymentStatus === "PAID")
+                                ? "PAID"
+                                : shipment.payments?.[0]?.paymentStatus ?? "PENDING"
+                            }
+                          />
+                        </div>
                       </td>
                       <td className="px-5 py-4 text-xs text-muted-foreground">
                         {new Date(shipment.createdAt).toLocaleDateString()}

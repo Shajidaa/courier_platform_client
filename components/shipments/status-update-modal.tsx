@@ -7,9 +7,10 @@ import { Input } from "@/components/ui/input";
 import { shipmentApi } from "@/api/shipment.api";
 import { hubApi } from "@/api/hub.api";
 import { ShipmentStatusBadge } from "./shipment-status-badge";
+import { PaymentStatusBadge } from "@/components/payments/payment-status-badge";
 import type { IShipment, TShipmentStatus } from "@/types/shipment.types";
 import type { IHub } from "@/types/hub.types";
-import { AlertCircle, ArrowRight, Loader2 } from "lucide-react";
+import { AlertCircle, ArrowRight, Loader2, ShieldAlert } from "lucide-react";
 
 const ALLOWED_TRANSITIONS: Partial<Record<TShipmentStatus, TShipmentStatus[]>> = {
   PENDING: ["ACCEPTED", "CANCELLED"],
@@ -34,6 +35,7 @@ export function StatusUpdateModal({
   onClose,
   onSuccess,
 }: StatusUpdateModalProps) {
+  const [currentShipment, setCurrentShipment] = useState<IShipment | null>(shipment);
   const [targetStatus, setTargetStatus] = useState<TShipmentStatus | "">("");
   const [note, setNote] = useState("");
   const [cancellationReason, setCancellationReason] = useState("");
@@ -43,18 +45,44 @@ export function StatusUpdateModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const availableStatuses = shipment
-    ? ALLOWED_TRANSITIONS[shipment.status] ?? []
+  const activeShipment = currentShipment ?? shipment;
+  const availableStatuses = activeShipment
+    ? ALLOWED_TRANSITIONS[activeShipment.status] ?? []
     : [];
+
+  const isPaymentPaid = Boolean(
+    activeShipment?.payments &&
+      activeShipment.payments.length > 0 &&
+      activeShipment.payments.every((p) => p.paymentStatus === "PAID"),
+  );
+
+  const primaryPayment = activeShipment?.payments?.[0];
+  const currentPaymentStatus = primaryPayment?.paymentStatus ?? "PENDING";
+  const payableAmount = Number(
+    primaryPayment?.amount ??
+      Number(activeShipment?.deliveryCharge || 0) +
+        Number(activeShipment?.codAmount || 0),
+  ).toFixed(2);
 
   useEffect(() => {
     if (open && shipment) {
+      setCurrentShipment(shipment);
       const allowed = ALLOWED_TRANSITIONS[shipment.status] ?? [];
       setTargetStatus(allowed[0] || "");
       setNote("");
       setCancellationReason("");
       setHubId(shipment.currentHub?.id || "");
       setError(null);
+
+      // Fetch fresh details with latest payments data
+      shipmentApi
+        .getById(shipment.id)
+        .then((res) => {
+          if (res.data) {
+            setCurrentShipment(res.data);
+          }
+        })
+        .catch(() => {});
 
       // Fetch hubs if needed
       hubApi
@@ -66,10 +94,17 @@ export function StatusUpdateModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!shipment || !targetStatus) return;
+    if (!activeShipment || !targetStatus) return;
 
     if (targetStatus === "CANCELLED" && !cancellationReason.trim()) {
       setError("Cancellation reason is required when cancelling.");
+      return;
+    }
+
+    if (targetStatus === "DELIVERED" && !isPaymentPaid) {
+      setError(
+        "Payment is pending. Shipment cannot be marked as Delivered without completed payment.",
+      );
       return;
     }
 
@@ -77,7 +112,7 @@ export function StatusUpdateModal({
     setLoading(true);
 
     try {
-      await shipmentApi.updateStatus(shipment.id, {
+      await shipmentApi.updateStatus(activeShipment.id, {
         status: targetStatus,
         note: note.trim() || undefined,
         cancellationReason: cancellationReason.trim() || undefined,
@@ -109,24 +144,33 @@ export function StatusUpdateModal({
           </div>
         )}
 
-        {shipment && (
+        {activeShipment && (
           <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Tracking Number</span>
               <span className="font-mono font-bold text-foreground">
-                {shipment.trackingNumber}
+                {activeShipment.trackingNumber}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">Current Status</span>
-              <ShipmentStatusBadge status={shipment.status} />
+              <ShipmentStatusBadge status={activeShipment.status} />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Payment Status</span>
+              <div className="flex items-center gap-2">
+                <PaymentStatusBadge status={currentPaymentStatus} />
+                <span className="text-xs font-semibold text-foreground">
+                  ৳{payableAmount}
+                </span>
+              </div>
             </div>
           </div>
         )}
 
         {availableStatuses.length === 0 ? (
           <div className="py-4 text-center text-sm text-muted-foreground">
-            This shipment is in a terminal state ({shipment?.status}) and cannot be transitioned further.
+            This shipment is in a terminal state ({activeShipment?.status}) and cannot be transitioned further.
           </div>
         ) : (
           <>
@@ -143,12 +187,31 @@ export function StatusUpdateModal({
                 required
               >
                 {availableStatuses.map((s) => (
-                  <option key={s} value={s} className="bg-background">
-                    {s.replace(/_/g, " ")}
+                  <option
+                    key={s}
+                    value={s}
+                    disabled={s === "DELIVERED" && !isPaymentPaid}
+                    className="bg-background"
+                  >
+                    {s === "DELIVERED" && !isPaymentPaid
+                      ? "DELIVERED (Requires Completed Payment)"
+                      : s.replace(/_/g, " ")}
                   </option>
                 ))}
               </select>
             </div>
+
+            {targetStatus === "DELIVERED" && !isPaymentPaid && (
+              <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-700 dark:text-amber-400">
+                <ShieldAlert className="size-4 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <p className="font-semibold">Payment Required Before Delivery</p>
+                  <p>
+                    This shipment cannot be marked as <span className="font-semibold">DELIVERED</span> because payment is still <span className="font-semibold uppercase">{currentPaymentStatus}</span>. Payment must be completed before delivering.
+                  </p>
+                </div>
+              </div>
+            )}
 
             {(targetStatus === "IN_HUB" || targetStatus === "IN_TRANSIT") && (
               <div className="space-y-1.5">
@@ -201,7 +264,14 @@ export function StatusUpdateModal({
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading || !targetStatus}>
+              <Button
+                type="submit"
+                disabled={
+                  loading ||
+                  !targetStatus ||
+                  (targetStatus === "DELIVERED" && !isPaymentPaid)
+                }
+              >
                 {loading ? (
                   <>
                     <Loader2 className="mr-1.5 size-4 animate-spin" />

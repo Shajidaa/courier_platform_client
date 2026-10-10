@@ -17,6 +17,7 @@ import { RoleGuard } from "@/components/layout/role-guard";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { Button } from "@/components/ui/button";
 import { ShipmentStatusBadge } from "@/components/shipments/shipment-status-badge";
+import { PaymentStatusBadge } from "@/components/payments/payment-status-badge";
 import { ShipmentDetailModal } from "@/components/shipments/shipment-detail-modal";
 import { StatusUpdateModal } from "@/components/shipments/status-update-modal";
 import { shipmentApi } from "@/api/shipment.api";
@@ -134,6 +135,13 @@ export default function RiderDashboardPage() {
                         {s.trackingNumber}
                       </span>
                       <ShipmentStatusBadge status={s.status} />
+                      <PaymentStatusBadge
+                        status={
+                          s.payments && s.payments.length > 0 && s.payments.every((p) => p.paymentStatus === "PAID")
+                            ? "PAID"
+                            : s.payments?.[0]?.paymentStatus ?? "PENDING"
+                        }
+                      />
                     </div>
                     <p className="text-sm font-semibold text-foreground">
                       {s.recipientName} ({s.recipientPhone})

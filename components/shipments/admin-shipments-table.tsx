@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ShipmentStatusBadge } from "./shipment-status-badge";
+import { PaymentStatusBadge } from "@/components/payments/payment-status-badge";
 import { ShipmentDetailModal } from "./shipment-detail-modal";
 import { StatusUpdateModal } from "./status-update-modal";
 import { AssignRiderModal } from "./assign-rider-modal";
@@ -235,7 +236,16 @@ export function AdminShipmentsTable() {
                         ৳{Number(shipment.deliveryCharge).toFixed(2)}
                       </td>
                       <td className="px-5 py-4">
-                        <ShipmentStatusBadge status={shipment.status} />
+                        <div className="flex flex-col gap-1 items-start">
+                          <ShipmentStatusBadge status={shipment.status} />
+                          <PaymentStatusBadge
+                            status={
+                              shipment.payments && shipment.payments.length > 0 && shipment.payments.every((p) => p.paymentStatus === "PAID")
+                                ? "PAID"
+                                : shipment.payments?.[0]?.paymentStatus ?? "PENDING"
+                            }
+                          />
+                        </div>
                       </td>
                       <td className="px-5 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
