@@ -280,7 +280,7 @@ export default function Nav() {
               <Button
                 size="sm"
                 asChild
-                className="rounded-lg font-semibold shadow-sm shadow-primary/20 gap-1.5"
+                className="hidden md:inline-flex rounded-lg font-semibold shadow-sm shadow-primary/20 gap-1.5"
               >
                 <Link href="/register">
                   <span>Get Started</span>
