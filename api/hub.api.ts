@@ -24,11 +24,20 @@ function buildQuery(params: Record<string, string | number | undefined>): string
     return s ? `?${s}` : ""
 }
 
+/** Always coerce page/limit to integers so Prisma doesn't receive strings */
+function normaliseQuery(query: IHubListQuery): Record<string, string | number | undefined> {
+    return {
+        page: Math.max(1, Number(query.page ?? 1)),
+        limit: Math.max(1, Number(query.limit ?? 10)),
+        ...(query.search ? { search: query.search } : {}),
+    }
+}
+
 export const hubApi = {
     /** GET /hubs — ADMIN, SUPER_ADMIN, OPS_MANAGER, HUB_MANAGER */
     getAll: (query: IHubListQuery = {}) =>
         apiClient<IApiResponse<IHub[]> & { meta: IHubListResponse["meta"] }>(
-            `/hubs${buildQuery(query as Record<string, string | number | undefined>)}`,
+            `/hubs${buildQuery(normaliseQuery(query))}`,
             { headers: authHeaders() },
         ),
 
