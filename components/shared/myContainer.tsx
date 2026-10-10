@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function MyContainer({children,className}: {children: React.ReactNode, className?: string}) {
   return (
-    <div className={`container mx-auto px-4 ${className || ''}`}>{children}</div>
+    <div className={`container mx-auto px-4 lg:px-6 ${className || ''}`}>{children}</div>
   )
 }

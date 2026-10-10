@@ -10,9 +10,7 @@ import {
   Truck,
   ShieldCheck,
   Zap,
-  Building2,
-  Clock,
-  Sparkles,
+
   LayoutDashboard,
   Search,
   CheckCircle2,
@@ -29,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { ROLE_HOME, type TRole } from "@/types/roles";
-
+import  MyContainer  from "@/components/shared/myContainer";
 const ROLE_LABELS: Record<string, string> = {
   SENDER: "Sender",
   RIDER: "Rider",
@@ -59,12 +57,12 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24 border-b border-border/50">
+    <MyContainer className="relative overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24 border-b border-border/50">
       {/* Background ambient lighting */}
       <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-tr from-primary/20 via-indigo-500/15 to-purple-500/10 blur-[140px] rounded-full pointer-events-none -z-10" />
       <div className="absolute top-40 right-10 w-[350px] h-[350px] bg-emerald-500/10 blur-[110px] rounded-full pointer-events-none -z-10" />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="">
         <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
           {/* Left Column: Value Prop & Interactive Quick Action */}
           <div className="lg:col-span-6 space-y-6 text-left">
@@ -316,6 +314,6 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-    </section>
+    </MyContainer>
   );
 }
